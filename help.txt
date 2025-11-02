@@ -2,3 +2,4 @@ trigger.txt
 procedure.txt
 cursor.txt
 procedurecursor.txt
+package.txt
