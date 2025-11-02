@@ -1,0 +1,10 @@
+CREATE OR REPLACE TRIGGER noti
+BEFORE UPDATE OF BALANCE ON ACC
+FOR EACH ROW
+BEGIN
+    -- Check if new balance is negative
+    IF :NEW.BALANCE < 0 THEN
+        RAISE_APPLICATION_ERROR(-20004, '❌ Balance cannot be negative!');
+    END IF;
+END;
+/
