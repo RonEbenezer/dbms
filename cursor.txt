@@ -1,0 +1,19 @@
+DECLARE
+    CURSOR cursor_name IS
+        SELECT column1, column2
+        FROM table_name
+        WHERE condition;
+
+    -- Variables to hold each row’s data
+    v_col1 table_name.column1%TYPE;
+    v_col2 table_name.column2%TYPE;
+BEGIN
+    OPEN cursor_name;           -- Step 1: Open the cursor
+    LOOP
+        FETCH cursor_name INTO v_col1, v_col2;  -- Step 2: Fetch one row
+        EXIT WHEN cursor_name%NOTFOUND;         -- Step 3: Stop when no more rows
+        DBMS_OUTPUT.PUT_LINE(v_col1 || ' - ' || v_col2);
+    END LOOP;
+    CLOSE cursor_name;          -- Step 4: Close the cursor
+END;
+/
