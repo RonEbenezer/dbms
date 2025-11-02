@@ -1,0 +1,36 @@
+CREATE OR REPLACE PROCEDURE op(
+    p_type  IN VARCHAR2,
+    new_sal IN NUMBER,
+    eid     IN NUMBER
+)
+IS
+    v_count NUMBER;
+    sal_low EXCEPTION;
+BEGIN
+    IF p_type = 'insert' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM emp
+        WHERE dept_no = eid;
+
+        IF v_count != 0 THEN
+            INSERT INTO emp VALUES (8, 'Ron', 'Clerk', SYSDATE, 15000, 30);
+        ELSE
+            RAISE_APPLICATION_ERROR(-20004, 'Department does not exist');
+        END IF;
+
+    ELSIF p_type = 'update' THEN
+        IF new_sal < 10000 THEN
+            RAISE sal_low;
+        ELSE
+            UPDATE emp
+            SET salary = new_sal
+            WHERE emp_no = eid;
+        END IF;
+    END IF;
+
+EXCEPTION
+    WHEN sal_low THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20005, 'Salary cannot be less than 10000');
+END;
+/
