@@ -1,0 +1,32 @@
+CREATE OR REPLACE PROCEDURE upd(p_date IN DATE)
+IS
+    CURSOR c1 IS
+        SELECT Book_ID, Member_ID, Return_Date
+        FROM ISSUE
+        WHERE Return_Date < p_date;  -- overdue books only
+
+    b_id  NUMBER;
+    m_id  NUMBER;
+    r_id  DATE;
+    fine  NUMBER;
+BEGIN
+    OPEN c1;
+    LOOP
+        FETCH c1 INTO b_id, m_id, r_id;
+        EXIT WHEN c1%NOTFOUND;
+
+        fine := (p_date - r_id) * 2;  -- ₹2 per overdue day
+
+        UPDATE ISSUE
+        SET Fine = fine
+        WHERE Book_ID = b_id AND Member_ID = m_id;
+
+        DBMS_OUTPUT.PUT_LINE('Book ID: ' || b_id ||
+                             ' | Member ID: ' || m_id ||
+                             ' | Fine: ₹' || fine);
+    END LOOP;
+
+    CLOSE c1;
+    COMMIT;
+END;
+/
