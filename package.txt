@@ -1,0 +1,53 @@
+CREATE OR REPLACE PACKAGE EMP_PACK AS
+    -- Procedure to display employee details
+    PROCEDURE show_emp(p_empno IN NUMBER);
+
+    -- Function to calculate annual salary
+    FUNCTION annual_salary(p_empno IN NUMBER) RETURN NUMBER;
+END EMP_PACK;
+/
+
+
+CREATE OR REPLACE PACKAGE BODY EMP_PACK AS
+
+    -- Procedure Definition
+    PROCEDURE show_emp(p_empno IN NUMBER) IS
+        v_name EMP.ENAME%TYPE;
+        v_salary EMP.SALARY%TYPE;
+        e_invalid_emp EXCEPTION;
+    BEGIN
+        SELECT ENAME, SALARY INTO v_name, v_salary
+        FROM EMP
+        WHERE EMPNO = p_empno;
+
+        IF v_salary < 0 THEN
+            RAISE e_invalid_emp;
+        END IF;
+
+        DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_name);
+        DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('No such employee found.');
+        WHEN e_invalid_emp THEN
+            DBMS_OUTPUT.PUT_LINE('Invalid salary detected.');
+    END show_emp;
+
+    -- Function Definition
+    FUNCTION annual_salary(p_empno IN NUMBER) RETURN NUMBER IS
+        v_salary EMP.SALARY%TYPE;
+    BEGIN
+        SELECT SALARY INTO v_salary
+        FROM EMP
+        WHERE EMPNO = p_empno;
+
+        RETURN v_salary * 12;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Employee not found for annual salary.');
+            RETURN NULL;
+    END annual_salary;
+
+END EMP_PACK;
+/
